@@ -9,7 +9,7 @@ export default function HomePage() {
         style={{
           backgroundImage:
             'linear-gradient(to right, currentColor 0.5px, transparent 0.5px), linear-gradient(to bottom, currentColor 0.5px, transparent 0.5px)',
-          backgroundSize: '24px 24px'
+          backgroundSize: '24px 24px',
         }}
       />
 
@@ -23,9 +23,7 @@ export default function HomePage() {
                 <p className="text-xs tracking-[0.2em] uppercase text-neutral-500 dark:text-neutral-500 font-mono">
                   Software Engineer
                 </p>
-                <h1 className="text-[clamp(2.5rem,8vw,6rem)] leading-[0.95] tracking-[-0.02em] font-bold">
-                  RulerChen
-                </h1>
+                <h1 className="text-[clamp(2.5rem,8vw,6rem)] leading-[0.95] tracking-[-0.02em] font-bold">RulerChen</h1>
               </div>
 
               <div className="max-w-[600px] space-y-8">

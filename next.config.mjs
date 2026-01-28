@@ -7,6 +7,9 @@ const config = {
   output: 'export',
   reactStrictMode: true,
   basePath: '/Website',
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default withMDX(config);
