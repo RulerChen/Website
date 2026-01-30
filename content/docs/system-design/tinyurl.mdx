@@ -134,19 +134,17 @@ Location: https://www.example.com/some/very/long/url
 
 但以 TinyURL 為例，它是使用 301 搭配 `Cache-Control: max-age=0, must-revalidate, no-cache, no-store, private` 來忽略瀏覽器的快取，這樣就能夠同時達到 SEO 跟統計資訊的需求。
 
-<Accordions type="single">
-  <Accordion title="Cache-Control">
+<Callout type="info">
 
-    Cache-Control 的設定可以參考 [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) : 
+Cache-Control 的設定可以參考 [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) : 
 
-    - max-age=N: 表示回應可以被快取 N 秒
-    - must-revalidate: 表示在快取過期後，必須重新向服務器驗證資源是否有更新，需要搭配 ETag 或是 Last-Modified 使用
-    - no-cache: 表示回應可以被快取，但使用前必須先向服務器驗證資源是否有更新
-    - no-store: 表示回應不能被任何快取儲存
-    - public / private: public 表示回應可以被任何快取 (如 CDN) 儲存，private 表示回應只能被瀏覽器的快取儲存
+- max-age=N: 表示回應可以被快取 N 秒
+- must-revalidate: 表示在快取過期後，必須重新向服務器驗證資源是否有更新，需要搭配 ETag 或是 Last-Modified 使用
+- no-cache: 表示回應可以被快取，但使用前必須先向服務器驗證資源是否有更新
+- no-store: 表示回應不能被任何快取儲存
+- public / private: public 表示回應可以被任何快取 (如 CDN) 儲存，private 表示回應只能被瀏覽器的快取儲存
 
-  </Accordion>
-</Accordions>
+</Callout>
 
 TinyURL 採取的做法可能是為了讓很舊的瀏覽器也能正確忽略快取，因此使用了很多功能重複的指令，實際上應該只需要 `no-store` 就可以達到同樣的效果。
 
@@ -194,15 +192,13 @@ TinyURL 採取的做法可能是為了讓很舊的瀏覽器也能正確忽略快
 
 而對於編碼方式，常見的選擇是 Base62 或 Base58，因為 Base64 中的 + 和 / 是特殊字符，需要做 URL encoding，會增加短網址的長度。
 
-<Accordions type="single">
-  <Accordion title="Base Encoding">
+<Callout type="info">
 
-    - Base64: 使用 A-Z, a-z, 0-9, +, / 共 64 個字符
-    - Base62: 使用 A-Z, a-z, 0-9 共 62 個字符
-    - Base58: 使用 A-Z, a-z, 1-9 (去除容易混淆的 0, O, I, l) 共 58 個字符
+- Base64: 使用 A-Z, a-z, 0-9, +, / 共 64 個字符
+- Base62: 使用 A-Z, a-z, 0-9 共 62 個字符
+- Base58: 使用 A-Z, a-z, 1-9 (去除容易混淆的 0, O, I, l) 共 58 個字符
 
-  </Accordion>
-</Accordions>
+</Callout>
 
 假設使用 Base62 編碼，代表 :
 
@@ -212,15 +208,13 @@ TinyURL 採取的做法可能是為了讓很舊的瀏覽器也能正確忽略快
 
 每日產生 5M 個短網址，3 年下來大約是 5M * 365 * 3 = 5.5B 個短網址，因此最好使用 6-7 個字元來確保不容易碰撞。
 
-<Accordions type="single">
-  <Accordion title="Hash Collision">
+<Callout type="info">
 
-    如果是使用 hash function 的話，就需要特別注意碰撞的機率問題。
+如果是使用 hash function 的話，就需要特別注意碰撞的機率問題。
 
-    假設資料庫中已經有 50 億個短網址且使用 6 個字元，現在要再生成一個新的短網址，碰撞的機率大約是 50 億 / 568 億 ≈ 9%，這個機率看起來不高，但如果每天都產生 5M 個短網址，那麼一天就會有大約 450000 個短網址會碰撞。
+假設資料庫中已經有 50 億個短網址且使用 6 個字元，現在要再生成一個新的短網址，碰撞的機率大約是 50 億 / 568 億 ≈ 9%，這個機率看起來不高，但如果每天都產生 5M 個短網址，那麼一天就會有大約 450000 個短網址會碰撞。
 
-  </Accordion>
-</Accordions>
+</Callout>
 
 #### Option 1: Hash Function
 

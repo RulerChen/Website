@@ -2,5 +2,5 @@
   "title": "Other",
   "description": "",
   "root": true,
-  "pages": ["index"]
+  "pages": ["index", "shell"]
 }

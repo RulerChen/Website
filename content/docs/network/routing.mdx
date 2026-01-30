@@ -1,0 +1,110 @@
+---
+title: 'Routing'
+description: ''
+---
+
+## Introduction
+
+路由是網路中最為複雜且核心的問題之一。
+當主機 A 想要將封包傳送到主機 B 時，A 必須知道封包應該交給哪一個路由器進行轉發，並且在跨越多個網路的情況下，如何選擇合適的路由器與 AS，才能最終抵達目的地。
+
+下圖是一個簡化後的網路架構，包含四個 AS，編號 A 到 I 的終端主機，以及從 R1 到 R10 的路由器，用來說明網路的轉發流程。
+
+- AS (Autonomous System) 是構成網路的基本單位，它指的是由單一組織控制 (ISP、企業或政府機關)、使用相同路由策略的 IP 網路集合。
+    每個 AS 都有由 IANA 分配的編號 (ASN)，內部路由由該組織自行管理
+- 終端主機指的是負責發送與接收封包的設備
+- 路由器指的是負責轉發封包的設備，為了簡化討論，這裡將交換器跟路由器視為同一種東西
+
+![Network Example](/img/network/routing/demo.webp)
+
+要每個路由器都知道要把封包傳遞給誰，最直觀的做法是建立一個涵蓋全球所有主機的單一網路模型，並讓所有設備遵循統一的路由協議，但是由於網路的規模，這樣的設計只能停留在理論中。
+
+實務上的做法是利用網路是由許多獨立的網路所構成的特點，將路由分成內部路由和外部路由來討論 :
+
+- IGPs (Interior Gateway Protocols) : 負責 AS 內部的封包轉發。每個 AS 能夠根據自身需求，自由選擇內部的演算法
+- EGPs (Exterior Gateway Protocols) : 負責不同 AS 之間的資訊交換與路徑選擇，因為需要互相溝通，因此統一都是使用 BGP
+
+在設計這些協議時，有幾個問題需要考慮 :
+
+- 網路拓樸的結構瞬息萬變，設備可以隨時加入或離開網路，中間的鏈路也隨時有可能發生故障
+- 路由器無法即時獲得全局的資訊，同時，由於網路是分散式的，每個路由器都有需要負責的部分，需要考慮到單一路由器故障可能對網路造成的影響
+
+如果從演算法的角度來說，現在常見的路由協議大致可以分成三種類型，分別是 :
+
+- Distance Vector : RIP (Routing Information Protocol)
+- Link State : OSPF (Open Shortest Path First)、IS-IS (Intermediate System to Intermediate System)
+- Path Vector : BGP (Border Gateway Protocol)
+
+## Intra-Domain Routing
+
+對於 Intra-Domain Routing 來說，它的目標就是用最低的成本將封包送到目的地。
+
+### Distance Vector
+
+**TODO : See [example here](https://textbook.cs168.io/routing/distance-vector.html) first**
+
+Distance Vector 的核心邏輯在於每個路由器都只知道到目的地的距離以及下一跳要去哪，並透過與附近的路由器交互來收斂到正確的路徑。
+
+簡單來說，當主機 A 連到網路時，它會告訴路由器 R1，而 R1 會告訴自己的鄰居 R3 說 "我是 R1，我距離 A 的成本是 3"，這時候 R3 就會把自己到 R1 的成本加上 3，如果發現成本更低，就更新本地的路由表。
+
+```
+Destination | Cost | Next-hop
+A           | 5    | R1
+```
+
+前面有提到，由於網路是一個分散式的環境，因此在設計時需要預防各種突發狀況，如路由器失效等等，以下是完整的規則 :
+
+- 當路由器接收到訊息並且有以下情況時，則更新表格並重置 TTL
+    - 該目的地不在表格中
+    - 該訊息所說的到目的地的成本加上到該路由器的成本低於目前的成本
+    - 訊息來自於目前的下一跳
+- 當更新時，需要向所有的鄰居發送訊息
+    - 不要向下一跳發送廣播，或是發送無限大的廣播
+- 定期發送訊息給鄰居，確保這個路線活著
+- 任何大於等於 16 的成本都被視為無限大
+- 如果過期，也應該廣播
+
+### Link State
+
+前面 Distance Vector 中的路由器主要是接收鄰居的結果來計算自己的路由，每個節點只需要了解自己跟鄰居的資訊即可，而 Link State 則不同，每個節點都需要計算完整的路徑，而不是使用鄰居的結果。
+
+Link State 分成兩個步驟，第一步是找到自己的鄰居是誰，它會發送 hello 封包給整個網路，內容大致是 "我是 R1，我可以以成本 10 到達主機 A"。
+在每個路由器都成功建立起自己的網路拓樸之後，就可以運行最短路徑演算法 (如 Dijkstra) 來發送封包。
+
+這個過程中最重要的就是要注意 hello 封包會不會被過度傳遞造成網路崩潰，通常來說會在封包內加上序號或是時間戳來避免多次的重複傳送。
+
+## Inter-Domain Routing
+
+Inter-Domain Routing 是負責探討 AS 之間是怎麼互相溝通的，與 Intra-Domain Routing 最大的不同在於 AS 是一種商業模式，比起快速的到達目標，它更在乎交換流量所需的費用。
+
+一般情況下，BGP 的路由都會遵守 Gao-Rexford Rules 來確保路由是可收斂的，它假設 AS 之間存在三種關係 :
+
+- Provider
+- Peer
+- Customer
+
+Gao-Rexford Rules 認為每個 AS 都喜歡賺錢而不喜歡賠錢，因此當有多個路徑可以選擇的時候，都會選擇優先傳遞給 Customer (可以賺錢)，其次是傳給 Peer (不虧錢)。
+透過這種方式，就避免了循環依賴的問題，也就能保證最後會處在穩定的狀態中。
+
+### BGP
+
+BGP 是一種基於 Distance Vector 的做法，使用這個的原因是因為 AS 需要保有自己的隱私，不需要暴露自己內部的網路拓樸。
+當 BGP 運作時，它傳遞的並非成本而是 ASPATH，也就是經過的 AS 路徑，而每個 AS 就可以根據這個屬性自由決定要不要接受這個路徑，同時也可以避免環路。
+
+在 BGP 中，我們會將路由器分成兩類，第一種是邊界路由器，至少有一條跟其他 AS 連結的路徑，另一種則是內部路由器。
+BGP 也分成 eBGP 跟 iBGP，AS 會先運行 IGP 協議來了解 AS 內點對點的路徑，接著邊界路由器運行 eBGP 來了解其他 AS 的路徑，最後運行 iBGP 來告訴 AS 內的路由器要去哪個邊界路由器。
+
+當有很多條路徑可以到時，它會查看的順序是 :
+
+- Local Preference : 這是由 AS 管理員設定的屬性，用來告訴你 AS 之間的關係 (如 Provider)
+- ASPATH : 路徑越短越好
+- Hot Potato Routing : 如果有多條路徑長度相同，則選擇能最快到自己的邊界路由器的路線，盡快把封包傳遞給別人處理
+- MED (Multi-Exit Discriminato) : 其他 AS 可以告知我們它比較希望流量從哪裡進來
+
+最後，由於 BGP 本身是一個基於信任的協議，它基本相信其他 AS 所傳過來的資料，因此安全性是它最大的問題，如 [BGP hijacking](https://en.wikipedia.org/wiki/BGP_hijacking)。
+
+## Router Hardware
+
+**TODO : [See here](https://textbook.cs168.io/routing/router.html)**
+
+對於路由器來說，最重要的就是轉發的延遲，通常來說會盡量讓封包在硬體層面就直接處理掉，來最大化加速轉發流程。
