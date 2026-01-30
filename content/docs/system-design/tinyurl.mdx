@@ -102,6 +102,7 @@ POST /api/urls
     "custom_alias": "optional-custom-alias",
     "expiry_date": "optional-expiry-date"
 }
+
 Response: HTTP 200 OK
 {
     "short_url": "https://tinyurl.com/abc123"
@@ -117,6 +118,7 @@ Response: HTTP 200 OK
 
 ```http
 GET /{short_url}
+
 Response: HTTP 301 Moved Permanently
 Location: https://www.example.com/some/very/long/url
 ```
@@ -132,17 +134,19 @@ Location: https://www.example.com/some/very/long/url
 
 但以 TinyURL 為例，它是使用 301 搭配 `Cache-Control: max-age=0, must-revalidate, no-cache, no-store, private` 來忽略瀏覽器的快取，這樣就能夠同時達到 SEO 跟統計資訊的需求。
 
-:::info
+<Accordions type="single">
+  <Accordion title="Cache-Control">
 
-Cache-Control 的設定可以參考 [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) : 
+    Cache-Control 的設定可以參考 [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) : 
 
-- max-age=N: 表示回應可以被快取 N 秒
-- must-revalidate: 表示在快取過期後，必須重新向服務器驗證資源是否有更新，需要搭配 ETag 或是 Last-Modified 使用
-- no-cache: 表示回應可以被快取，但使用前必須先向服務器驗證資源是否有更新
-- no-store: 表示回應不能被任何快取儲存
-- public / private: public 表示回應可以被任何快取 (如 CDN) 儲存，private 表示回應只能被瀏覽器的快取儲存
+    - max-age=N: 表示回應可以被快取 N 秒
+    - must-revalidate: 表示在快取過期後，必須重新向服務器驗證資源是否有更新，需要搭配 ETag 或是 Last-Modified 使用
+    - no-cache: 表示回應可以被快取，但使用前必須先向服務器驗證資源是否有更新
+    - no-store: 表示回應不能被任何快取儲存
+    - public / private: public 表示回應可以被任何快取 (如 CDN) 儲存，private 表示回應只能被瀏覽器的快取儲存
 
-:::
+  </Accordion>
+</Accordions>
 
 TinyURL 採取的做法可能是為了讓很舊的瀏覽器也能正確忽略快取，因此使用了很多功能重複的指令，實際上應該只需要 `no-store` 就可以達到同樣的效果。
 
@@ -190,13 +194,15 @@ TinyURL 採取的做法可能是為了讓很舊的瀏覽器也能正確忽略快
 
 而對於編碼方式，常見的選擇是 Base62 或 Base58，因為 Base64 中的 + 和 / 是特殊字符，需要做 URL encoding，會增加短網址的長度。
 
-:::info
+<Accordions type="single">
+  <Accordion title="Base Encoding">
 
-- Base64: 使用 A-Z, a-z, 0-9, +, / 共 64 個字符
-- Base62: 使用 A-Z, a-z, 0-9 共 62 個字符
-- Base58: 使用 A-Z, a-z, 1-9 (去除容易混淆的 0, O, I, l) 共 58 個字符
+    - Base64: 使用 A-Z, a-z, 0-9, +, / 共 64 個字符
+    - Base62: 使用 A-Z, a-z, 0-9 共 62 個字符
+    - Base58: 使用 A-Z, a-z, 1-9 (去除容易混淆的 0, O, I, l) 共 58 個字符
 
-:::
+  </Accordion>
+</Accordions>
 
 假設使用 Base62 編碼，代表 :
 
@@ -206,13 +212,15 @@ TinyURL 採取的做法可能是為了讓很舊的瀏覽器也能正確忽略快
 
 每日產生 5M 個短網址，3 年下來大約是 5M * 365 * 3 = 5.5B 個短網址，因此最好使用 6-7 個字元來確保不容易碰撞。
 
-:::note
+<Accordions type="single">
+  <Accordion title="Hash Collision">
 
-如果是使用 hash function 的話，就需要特別注意碰撞的機率問題。
+    如果是使用 hash function 的話，就需要特別注意碰撞的機率問題。
 
-假設資料庫中已經有 50 億個短網址且使用 6 個字元，現在要再生成一個新的短網址，碰撞的機率大約是 50 億 / 568 億 ≈ 9%，這個機率看起來不高，但如果每天都產生 5M 個短網址，那麼一天就會有大約 450000 個短網址會碰撞。
+    假設資料庫中已經有 50 億個短網址且使用 6 個字元，現在要再生成一個新的短網址，碰撞的機率大約是 50 億 / 568 億 ≈ 9%，這個機率看起來不高，但如果每天都產生 5M 個短網址，那麼一天就會有大約 450000 個短網址會碰撞。
 
-:::
+  </Accordion>
+</Accordions>
 
 #### Option 1: Hash Function
 
@@ -228,7 +236,7 @@ TinyURL 採取的做法可能是為了讓很舊的瀏覽器也能正確忽略快
 2. Nonce / Salt: 在生成短網址時加入一個隨機的 nonce 或是 salt，這樣即使使用者輸入相同的長網址，也會產生不同的短網址
 3. Retry: 如果產生的短網址已經存在，可以嘗試加入不同的 nonce 或是 salt 並重新生成，直到重試的次數達到上限
 
-```python
+```python title="hash_short_url.py"
 import hashlib
 import os
 
@@ -320,7 +328,7 @@ print(f"short_code: {short_code}")
 
 由於這裡的 SQL 查詢主要是 point search (根據 short_url 查找 long_url)，在 short_url 欄位上建立索引可以大幅提升查詢速度。
 
-```sql title="123.sql"
+```sql
 SELECT long_url 
 FROM url_mapping
 WHERE short_url = 'abc123';
@@ -337,14 +345,6 @@ CREATE INDEX idx_short_url ON url_mapping USING HASH (short_url);
 以前面估計的 QPS 來看 (29000 r/s, 290 w/s)，單單引入索引不足以應付這樣的讀取量。
 
 由於讀寫比例高達 100:1，且資料一旦寫入後通常不會再更改，因此很適合使用 cache (如 Redis) 來快取熱門的短網址，減少對資料庫的讀取壓力。
-
-:::info
-
-對於一般的 RDBMS (PostgreSQL、MySQL) 來說，在簡單的查詢下單個資料庫節點大約能處理 1000 writes/sec 或 3000 reads/sec 左右的請求。
-
-而對於像 Redis 這樣的 in-memory 資料庫，簡單的 GET / SET 操作在單個節點上可以輕鬆達到 100000 req/sec 以上的處理能力。
-
-:::
 
 引入快取雖然可以提升效能，但也會帶來可用性與一致性上的挑戰。
 為了提升可用性，可以使用 Redis Cluster 或其他 Redis 高可用方案。

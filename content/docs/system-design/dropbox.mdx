@@ -109,6 +109,7 @@ POST /api/items
     "item_type": "file",
     "parent_item_id": "folder_123"
 }
+
 Response: HTTP 201 Created
 {
     "item_id": "item_123",
@@ -143,6 +144,7 @@ POST /api/items/{item_id}/upload
         }
     ]
 }
+
 Response: HTTP 200 OK
 {
     "item_id": "item_123",
@@ -177,6 +179,7 @@ PATCH /api/items/{item_id}/version/{version_number}/chunks/complete
         }
     ]
 }
+
 Response: HTTP 200 OK
 {
     "item_id": "item_123",
@@ -204,6 +207,7 @@ Response: HTTP 200 OK
 
 ```http
 GET /api/items/{item_id}/metadata
+
 Response: HTTP 200 OK
 {
     "item_id": "item_123",
@@ -237,6 +241,7 @@ GET /api/items/{item_id}/versions/{version_number}
         "abc123"
     ]
 }
+
 Response: HTTP 200 OK
 {
     "item_id": "item_123",
@@ -271,6 +276,7 @@ POST /api/items/{item_id}/shares
         }
     ]
 }
+
 Response: HTTP 200 OK
 {
     "item_id": "item_123",
@@ -297,6 +303,7 @@ Response: HTTP 200 OK
 
 ```http
 GET /api/items/{item_id}/versions/{version_number}/metadata
+
 Response: HTTP 200 OK
 {
     "item_id": "item_123",
@@ -325,6 +332,7 @@ Response: HTTP 200 OK
 
 ```http
 GET /api/sync/changes?since_timestamp=2023-10-01T12:00:00Z
+
 Response: HTTP 200 OK
 {
     "changes": [
@@ -461,7 +469,7 @@ CDC 的基本原理是不使用固定大小來切 chunk，而是使用滾動哈�
 
 而對於在線的使用者來說，change service 會將變更的訊息發送到 kafka 的另一個 topic 中，這個 topic 會被一個專門負責通知的 consumer group 訂閱，這個 consumer group 會將訊息中的使用者找出來，並且向 redis pub/sub 中發送通知。
 
-```json title="Example kafka message"
+```json
 {
     "event_id": "event_123",
     "event_type": "file_updated",
