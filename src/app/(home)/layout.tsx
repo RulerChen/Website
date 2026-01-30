@@ -1,6 +1,6 @@
 import { HomeLayout } from 'fumadocs-ui/layouts/home';
 import { baseOptions } from '@/lib/layout.shared';
-import { Book, Pencil } from 'lucide-react';
+import { Book, Linkedin } from 'lucide-react';
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
@@ -16,6 +16,13 @@ export default function Layout({ children }: LayoutProps<'/'>) {
           icon: <Book />,
           text: 'Blog',
           url: '/blog',
+        },
+        {
+          type: 'icon',
+          label: 'LinkedIn',
+          icon: <Linkedin />,
+          text: 'LinkedIn',
+          url: 'https://linkedin.com/in/rulerchen',
         },
       ]}
     >

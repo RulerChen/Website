@@ -1,5 +1,6 @@
-import type { BaseLayoutProps, LinkItemType } from 'fumadocs-ui/layouts/shared';
+import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import Image from 'next/image';
+import { Linkedin } from 'lucide-react';
 
 export function baseOptions(): BaseLayoutProps {
   return {

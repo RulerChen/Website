@@ -2,6 +2,35 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
+/* CSS Custom Properties */
+:root {
+  /* Fonts set via next/font in layout */
+  --font-display: var(--font-display-serif), Georgia, serif;
+  --font-body: var(--font-dm-sans), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+
+  /* Light theme colors */
+  --bg-primary: #faf9f7;
+  --bg-secondary: #f5f3ef;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b6b6b;
+  --text-muted: #9a9a9a;
+  --accent-warm: #e07a5f;
+  --accent-cool: #3d5a80;
+  --border-subtle: rgba(0, 0, 0, 0.06);
+}
+
+.dark {
+  --bg-primary: #0c0c0c;
+  --bg-secondary: #141414;
+  --text-primary: #f5f5f5;
+  --text-secondary: #a3a3a3;
+  --text-muted: #6b6b6b;
+  --accent-warm: #f4a261;
+  --accent-cool: #81b4ff;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+}
+
 /* Editorial Typography System */
 @layer base {
   html {
@@ -15,15 +44,139 @@
   }
 
   body {
-    font-family:
-      system-ui,
-      -apple-system,
-      BlinkMacSystemFont,
-      'Segoe UI',
-      'Inter',
-      sans-serif;
+    font-family: var(--font-body);
     font-weight: 400;
+    background: var(--bg-primary);
+    color: var(--text-primary);
   }
+}
+
+/* Keyframe Animations */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(2deg);
+  }
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes line-draw {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Animation Utilities */
+.animate-fade-up {
+  animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+/* Stagger Delays */
+.delay-100 {
+  animation-delay: 0.1s;
+}
+.delay-200 {
+  animation-delay: 0.2s;
+}
+.delay-300 {
+  animation-delay: 0.3s;
+}
+.delay-400 {
+  animation-delay: 0.4s;
+}
+.delay-500 {
+  animation-delay: 0.5s;
+}
+.delay-600 {
+  animation-delay: 0.6s;
+}
+.delay-700 {
+  animation-delay: 0.7s;
+}
+.delay-800 {
+  animation-delay: 0.8s;
 }
 
 /* Refined Scrollbar */
@@ -36,27 +189,226 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 4px;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 /* Selection Color */
 ::selection {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--accent-warm);
+  color: white;
 }
 
 .dark ::selection {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--accent-warm);
+  color: white;
+}
+
+/* Grain Texture Overlay */
+.grain-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dark .grain-overlay::before {
+  opacity: 0.04;
+}
+
+/* Link Hover Effects */
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 1.5px;
+  background: var(--accent-warm);
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* Glass Card Effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+}
+
+.dark .glass-card {
+  background: rgba(20, 20, 20, 0.6);
+}
+
+/* ============================================
+   Fumadocs UI Customizations
+   ============================================ */
+
+/* Override Fumadocs colors to match our design */
+:root {
+  --fd-background: var(--bg-primary);
+  --fd-foreground: var(--text-primary);
+  --fd-muted: var(--bg-secondary);
+  --fd-muted-foreground: var(--text-secondary);
+  --fd-border: var(--border-subtle);
+  --fd-primary: var(--accent-warm);
+  --fd-primary-foreground: white;
+  --fd-accent: var(--bg-secondary);
+  --fd-accent-foreground: var(--text-primary);
+}
+
+/* Sidebar styling */
+#nd-docs-layout [data-fd-sidebar] {
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-subtle);
+}
+
+/* Sidebar tabs dropdown */
+#nd-docs-layout [data-fd-sidebar] [data-fd-tabs] button {
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+}
+
+#nd-docs-layout [data-fd-sidebar] [data-fd-tabs] button:hover {
+  background: var(--bg-secondary);
+}
+
+#nd-docs-layout [data-fd-sidebar] [data-fd-tabs] button[data-active='true'] {
+  background: var(--accent-warm);
+  color: white;
+}
+
+/* Sidebar links */
+#nd-docs-layout [data-fd-sidebar] a {
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+#nd-docs-layout [data-fd-sidebar] a:hover {
+  background: var(--bg-secondary);
+}
+
+#nd-docs-layout [data-fd-sidebar] a[data-active='true'] {
+  background: var(--accent-warm) !important;
+  color: white !important;
+}
+
+/* Docs page content styling */
+.fd-page {
+  background: var(--bg-primary);
+}
+
+/* Docs title */
+[data-fd-docs-title] {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* TOC styling */
+[data-fd-toc] {
+  border-left: 1px solid var(--border-subtle);
+}
+
+[data-fd-toc] a {
+  transition: all 0.2s ease;
+}
+
+[data-fd-toc] a[data-active='true'] {
+  color: var(--accent-warm);
+  border-left-color: var(--accent-warm);
+}
+
+/* Inline code */
+:not(pre) > code {
+  font-family: var(--font-mono) !important;
+  background: var(--bg-secondary);
+  padding: 0.2em 0.4em;
+  border-radius: 0.375rem;
+  font-size: 0.875em;
+  border: 1px solid var(--border-subtle);
+}
+
+/* Syntax highlighting - remove extra padding */
+[data-rehype-pretty-code-figure] pre {
+  background: var(--bg-secondary) !important;
+  padding: 0 !important;
+}
+
+[data-rehype-pretty-code-figure] pre > code {
+  background: transparent !important;
+  border: none !important;
+  padding: 1rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.7 !important;
+}
+
+[data-line] {
+  padding: 0 1rem;
+  margin: 0 -1rem;
+}
+
+[data-highlighted-line] {
+  background: rgba(224, 122, 95, 0.1);
+}
+
+.dark [data-highlighted-line] {
+  background: rgba(244, 162, 97, 0.1);
+}
+
+/* Tables */
+table {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+th {
+  background: var(--bg-secondary);
+}
+
+/* Navbar */
+[data-fd-nav] {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Search styling */
+[data-fd-search] {
+  border-radius: 0.75rem;
+}
+
+/* Cards in docs */
+.fd-card {
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  transition: all 0.2s ease;
+}
+
+.fd-card:hover {
+  border-color: var(--accent-warm);
+  transform: translateY(-2px);
 }
