@@ -2,5 +2,5 @@
   "title": "Security",
   "description": "",
   "root": true,
-  "pages": ["index"]
+  "pages": ["index", "---Case Study---", "log4j", "windowsservice"]
 }
