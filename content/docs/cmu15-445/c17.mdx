@@ -1,9 +1,5 @@
 ---
 title: 'Two-Phase Locking Concurrency Control'
-sidebar_position: '17'
-description: CMU15-445/645 Two-Phase Locking Concurrency Control
-keywords: [CMU15-445/645, Two-Phase Locking Concurrency Control, CMU15-445/645 筆記]
-tags: [CMU15-445]
 ---
 
 在上一篇筆記中，我們學到了怎麼判斷一個 schedule 是否是 serializable，但是在實際的系統中，由於交易會不斷地進入跟離開，且使用者未必會一次性告訴 DBMS 所有需要鎖定的資料，因此我們需要使用 lock 來保證 schedule 是 serializable，而 2PL 就是一種常見的 protocol。
