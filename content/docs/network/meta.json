@@ -2,5 +2,5 @@
   "title": "Network",
   "description": "",
   "root": true,
-  "pages": ["index", "---Network Basic---","intro", "ip", "routing", "tcp", "http"]
+  "pages": ["index", "---Basic---","intro", "ip", "routing", "tcp", "http"]
 }
